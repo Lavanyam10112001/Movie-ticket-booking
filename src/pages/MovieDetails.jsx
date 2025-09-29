@@ -46,17 +46,23 @@ const MovieDetails = () => {
           </h1>
 
           <div className='flex items-center gap-2 text-gray-300'>
-            <StarIcon className='w-5 h-5 text-primary fill-primary' />
-              {show.movie.vote_average.toFixed(1)} User Rating
-           </div>
+       <StarIcon className='w-5 h-5 text-primary fill-primary' />
+       {typeof show.movie.vote_average === 'number'
+       ? `${show.movie.vote_average.toFixed(1)} User Rating`
+        : 'No Rating Available'}
+</div>
 
           <p className='text-gray-400 mt-2 text-sm leading-tight max-w-xl'>
             {show.movie.overview}
           </p>
 
           <p>
-             {timeFormat(show.movie.runtime)} : {show.movie.genres.map(genre=> genre.name).join(", ")}.{show.movie.release_date.split("_")[0]}   
-          </p>
+  {show.movie.runtime ? timeFormat(show.movie.runtime) : 'Unknown length'} :&nbsp;
+  {Array.isArray(show.movie.genres)
+    ? show.movie.genres.map((genre) => genre.name).join(", ")
+    : 'No genres'}.
+  {show.movie.release_date?.split("_")[0] || 'Unknown year'}
+</p>
 
           <div className='flex items-center flex-wrap gap-4 mt-4'>
             <button className='flex items-center gap-2 px-7 py-3 text-sm bg-gray-800 hover:bg-gray-900 transition rounded-md font-medium cursor-pointer active:scale-95'>
@@ -75,24 +81,27 @@ const MovieDetails = () => {
         </div>
       </div>
 
-      <p className='text-lg font-medium mt-20'>Your Favorite Cast</p>
-      <div className='overflow-x-auto no-scrollbar mt-8 pb-4'>
-        <div className='flex items-center gap-4 w-max px-4'>
-          {show.movie.casts.slice(0,12).map((cast,index) => (
-            <div key={index} className='flex flex-col items-center text-center'>
-            
-              <img
-                src={cast.profile_path}
-                alt={cast.name}
-                className='rounded-full h-20 md:h-20 aspect-square object-cover'/>
-          
-              <p className='font-medium text-xs mt-3'>{cast.name}</p>
-            </div>
-          ))}
+     <p className='text-lg font-medium mt-20'>Your Favorite Cast</p>
+<div className='overflow-x-auto no-scrollbar mt-8 pb-4'>
+  <div className='flex items-center gap-4 w-max px-4'>
+    {Array.isArray(show.movie.casts) && show.movie.casts.length > 0 ? (
+      show.movie.casts.slice(0, 12).map((cast, index) => (
+        <div key={index} className='flex flex-col items-center text-center'>
+          <img
+            src={cast.profile_path}
+            alt={cast.name}
+            className='rounded-full h-20 md:h-20 aspect-square object-cover'
+          />
+          <p className='font-medium text-xs mt-3'>{cast.name}</p>
         </div>
-      </div>
+      ))
+    ) : (
+      <p className="text-gray-400">No cast information available.</p>
+    )}
+  </div>
+</div>
 
-      <DateSelect dateTime={show.dateTime} id={id} />
+      <DateSelect dateTime={show.dateTime} id={id}/>
 
       <p className='text-lg font-medium mt-20 mb-8'>You May Also Like</p>
       <div className='flex flex-wrap max:sm:justify-center gap-8'>
